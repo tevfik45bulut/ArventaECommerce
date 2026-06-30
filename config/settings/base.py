@@ -35,6 +35,8 @@ INSTALLED_APPS = [
     "apps.accounts",
     "apps.shipping",
     "apps.discounts",
+    "apps.reviews",
+    "apps.search",
 ]
 
 MIDDLEWARE = [

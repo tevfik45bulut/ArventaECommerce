@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Arama{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+<h2>Arama Sonuçları</h2>
+
+<form method="get">
+
+<div class="input-group mb-4">
+
+<input
+class="form-control"
+name="q"
+value="{{ request.GET.q }}">
+
+<button class="btn btn-dark">
+
+Ara
+
+</button>
+
+</div>
+
+</form>
+
+<div class="row">
+
+{% for product in products %}
+
+<div class="col-lg-3 mb-4">
+
+<div class="card">
+
+<div class="card-body">
+
+<h5>{{ product.name }}</h5>
+
+<p>{{ product.price }} ₺</p>
+
+<a
+href="{{ product.get_absolute_url }}"
+class="btn btn-dark">
+
+İncele
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+{% empty %}
+
+<p>Sonuç bulunamadı.</p>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+{% endblock %}

@@ -33,3 +33,7 @@ class Coupon(BaseModel):
 
     def __str__(self):
         return self.code
+    
+    class Meta:
+        verbose_name = "Kupon"
+        verbose_name_plural = "Kupon"

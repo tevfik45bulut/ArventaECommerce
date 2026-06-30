@@ -23,6 +23,10 @@ class ShippingCompany(BaseModel):
 
     def __str__(self):
         return self.name
+    
+    class Meta:
+        verbose_name = "Kargo Firması"
+        verbose_name_plural = "Kargo Firması"
 
 
 class ShippingMethod(BaseModel):
@@ -49,3 +53,7 @@ class ShippingMethod(BaseModel):
 
     def __str__(self):
         return self.name
+    
+    class Meta:
+        verbose_name = "Kargo Yöntemi"
+        verbose_name_plural = "Kargo Yöntemi"
