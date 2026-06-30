@@ -148,27 +148,74 @@ class ProductVariant(BaseModel):
         related_name="variants",
     )
 
-    sku = models.CharField(max_length=100, unique=True)
+    sku = models.CharField(
+        max_length=100,
+        unique=True,
+    )
+
+    barcode = models.CharField(
+        max_length=100,
+        blank=True,
+    )
 
     price = models.DecimalField(
         max_digits=10,
         decimal_places=2,
     )
 
+    compare_price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0,
+    )
+
     stock = models.PositiveIntegerField(default=0)
 
-    values = models.ManyToManyField(
-        ProductAttributeValue,
+    image = models.ForeignKey(
+        "ProductImage",
+        on_delete=models.SET_NULL,
+        null=True,
         blank=True,
     )
 
     def __str__(self):
-        return self.sku
-    
+        return f"{self.product.name} - {self.sku}"
+
     class Meta:
         verbose_name = "Ürün Varyantı"
         verbose_name_plural = "Ürün Varyantları"
 
+
+class ProductVariantValue(models.Model):
+    variant = models.ForeignKey(
+        ProductVariant,
+        on_delete=models.CASCADE,
+        related_name="variant_values",
+    )
+
+    attribute = models.ForeignKey(
+        ProductAttribute,
+        on_delete=models.CASCADE,
+    )
+
+    value = models.ForeignKey(
+        ProductAttributeValue,
+        on_delete=models.CASCADE,
+    )
+
+    class Meta:
+        unique_together = (
+            "variant",
+            "attribute",
+        )
+
+    def __str__(self):
+        return f"{self.variant.sku} - {self.attribute.name}: {self.value.value}"
+    
+    class Meta:
+        verbose_name = "Ürün Varyant Değeri"
+        verbose_name_plural = "Ürün Varyant Değerleri"
+        
 
 class ProductReview(BaseModel):
     product = models.ForeignKey(

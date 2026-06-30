@@ -8,7 +8,12 @@ from .models import (
     ProductReview,
     ProductTag,
     ProductVariant,
+    ProductVariantValue,
 )
+
+class ProductVariantValueInline(admin.TabularInline):
+    model = ProductVariantValue
+    extra = 0
 
 
 class ProductImageInline(admin.TabularInline):
@@ -16,9 +21,18 @@ class ProductImageInline(admin.TabularInline):
     extra = 1
 
 
-class ProductVariantInline(admin.TabularInline):
-    model = ProductVariant
-    extra = 1
+@admin.register(ProductVariant)
+class ProductVariantAdmin(admin.ModelAdmin):
+    list_display = (
+        "product",
+        "sku",
+        "price",
+        "stock",
+    )
+
+    inlines = [
+        ProductVariantValueInline,
+    ]
 
 
 @admin.register(Product)
@@ -49,11 +63,10 @@ class ProductAdmin(admin.ModelAdmin):
 
     inlines = [
         ProductImageInline,
-        ProductVariantInline,
     ]
-
 
 admin.site.register(ProductTag)
 admin.site.register(ProductAttribute)
 admin.site.register(ProductAttributeValue)
 admin.site.register(ProductReview)
+admin.site.register(ProductVariantValue)
