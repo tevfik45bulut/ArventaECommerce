@@ -7,6 +7,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("apps.pages.urls")),
     path("kategoriler/", include("apps.categories.urls")),
+    path("markalar/", include("apps.brands.urls")),
 ]
 
 if settings.DEBUG:

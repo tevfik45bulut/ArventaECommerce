@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}{{ object.meta_title|default:object.name }}{% endblock %}
+
+{% block description %}{{ object.meta_description }}{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    {% if object.logo %}
+        <img src="{{ object.logo.url }}" class="img-fluid mb-4" style="max-height:150px;">
+    {% endif %}
+
+    <h1>{{ object.name }}</h1>
+
+    <p>{{ object.description }}</p>
+
+    {% if object.website %}
+    <a href="{{ object.website }}" target="_blank" class="btn btn-outline-dark">
+        Web Sitesi
+    </a>
+    {% endif %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Markalar{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <h1 class="mb-4">Markalar</h1>
+
+    <div class="row">
+
+        {% for brand in brands %}
+
+        <div class="col-lg-3 col-md-4 col-6 mb-4">
+
+            <div class="card h-100">
+
+                {% if brand.logo %}
+                <img src="{{ brand.logo.url }}" class="card-img-top">
+                {% endif %}
+
+                <div class="card-body text-center">
+
+                    <h5>{{ brand.name }}</h5>
+
+                    <a href="{{ brand.get_absolute_url }}" class="btn btn-dark">
+                        İncele
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% empty %}
+
+        <p>Marka bulunamadı.</p>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}
