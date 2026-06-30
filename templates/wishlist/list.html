@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Favoriler{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+<h2>Favorilerim</h2>
+
+<div class="row">
+
+{% for item in wishlist.items.all %}
+
+<div class="col-lg-3 mb-4">
+
+<div class="card">
+
+<div class="card-body">
+
+<h5>{{ item.product.name }}</h5>
+
+<p>{{ item.product.price }} ₺</p>
+
+<a href="{{ item.product.get_absolute_url }}"
+class="btn btn-dark">
+
+Ürüne Git
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+{% empty %}
+
+<p>Favori ürününüz bulunmuyor.</p>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+{% endblock %}

@@ -10,6 +10,7 @@ urlpatterns = [
     path("markalar/", include("apps.brands.urls")),
     path("urunler/", include("apps.products.urls")),
     path("", include("apps.cart.urls")),
+    path("", include("apps.wishlist.urls")),
 ]
 
 if settings.DEBUG:

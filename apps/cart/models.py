@@ -14,6 +14,10 @@ class Cart(BaseModel):
 
     def __str__(self):
         return self.user.email
+    
+    class Meta:
+        verbose_name = "Sepet"
+        verbose_name_plural = "Sepet"
 
 
 class CartItem(BaseModel):
@@ -43,6 +47,9 @@ class CartItem(BaseModel):
             "product",
             "variant",
         )
+
+        verbose_name = "Sepet Ürünü"
+        verbose_name_plural = "Sepet Ürünleri"
 
     @property
     def unit_price(self):
