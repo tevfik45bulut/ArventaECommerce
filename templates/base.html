@@ -1,0 +1,42 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+
+    {% include "includes/meta.html" %}
+
+    <link rel="stylesheet" href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    {% block css %}{% endblock %}
+
+</head>
+
+<body>
+
+{% include "includes/navbar.html" %}
+
+{% include "includes/messages.html" %}
+
+<main>
+
+{% block content %}
+
+{% endblock %}
+
+</main>
+
+{% include "includes/footer.html" %}
+
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+<script src="{% static 'js/app.js' %}"></script>
+
+{% block js %}{% endblock %}
+
+</body>
+
+</html>

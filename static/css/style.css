@@ -1,0 +1,12 @@
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f8f9fa;
+}
+
+main{
+    min-height:75vh;
+}
+
+a{
+    text-decoration:none;
+}
