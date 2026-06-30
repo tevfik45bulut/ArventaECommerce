@@ -1,0 +1,101 @@
+{% extends "dashboard/base.html" %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between mb-4">
+
+<h3>Ürünler</h3>
+
+<a href="#" class="btn btn-dark">
+
+Yeni Ürün
+
+</a>
+
+</div>
+
+<table class="table table-hover align-middle">
+
+<thead>
+
+<tr>
+
+<th>ID</th>
+
+<th>Ürün</th>
+
+<th>Kategori</th>
+
+<th>Marka</th>
+
+<th>Fiyat</th>
+
+<th>Stok</th>
+
+<th></th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for product in products %}
+
+<tr>
+
+<td>
+
+{{ product.id }}
+
+</td>
+
+<td>
+
+{{ product.name }}
+
+</td>
+
+<td>
+
+{{ product.category }}
+
+</td>
+
+<td>
+
+{{ product.brand }}
+
+</td>
+
+<td>
+
+{{ product.price }}
+
+</td>
+
+<td>
+
+{{ product.stock }}
+
+</td>
+
+<td>
+
+<a href="#">
+
+Düzenle
+
+</a>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+{% endblock %}

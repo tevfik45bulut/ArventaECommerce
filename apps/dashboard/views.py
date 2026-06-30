@@ -28,3 +28,32 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         )
 
         return context
+
+    
+from django.views.generic import ListView
+
+from apps.dashboard.mixins import DashboardAccessMixin
+from apps.products.models import Product
+
+
+class DashboardProductListView(
+    DashboardAccessMixin,
+    ListView,
+):
+
+    model = Product
+
+    template_name = "dashboard/products/list.html"
+
+    context_object_name = "products"
+
+    paginate_by = 20
+
+    queryset = (
+        Product.objects
+        .select_related(
+            "category",
+            "brand",
+        )
+        .order_by("-id")
+    )
