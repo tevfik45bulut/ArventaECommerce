@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
-{% block title %}{{ object.meta_title|default:object.name }}{% endblock %}
-{% block description %}{{ object.meta_description }}{% endblock %}
+{% block title %}{{ product.meta_title|default:product.name }}{% endblock %}
+{% block description %}{{ product.meta_description }}{% endblock %}
 
 {% block content %}
 
@@ -11,33 +11,33 @@
 
         <div class="col-lg-6">
 
-            {% if object.images.first %}
-                <img src="{{ object.images.first.image.url }}" class="img-fluid rounded">
+            {% if product.images.first %}
+                <img src="{{ product.images.first.image.url }}" class="img-fluid rounded">
             {% endif %}
 
         </div>
 
         <div class="col-lg-6">
 
-            <h1>{{ object.name }}</h1>
+            <h1>{{ product.name }}</h1>
 
             <p class="text-muted">
-                {{ object.brand }}
+                {{ product.brand }}
             </p>
 
             <h3 class="mb-4">
-                {{ object.price }} ₺
+                {{ product.price }} ₺
             </h3>
 
             <div class="mb-4">
-                {{ object.description|linebreaks }}
+                {{ product.description|linebreaks }}
             </div>
 
         </div>
 
     </div>
 
-    {% for group in object.specification_groups.all %}
+    {% for group in product.specification_groups.all %}
 
     <hr>
 

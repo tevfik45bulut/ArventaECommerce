@@ -57,6 +57,10 @@ class Payment(BaseModel):
 
     def __str__(self):
         return self.order.order_number
+    
+    class Meta:
+        verbose_name = "Ödeme"
+        verbose_name_plural = "Ödeme"
 
 
 class PaymentLog(models.Model):
@@ -75,3 +79,8 @@ class PaymentLog(models.Model):
 
     def __str__(self):
         return self.payment.order.order_number
+    
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "ödeme Kaydı"
+        verbose_name_plural = "Ödeme Kayıtları"
