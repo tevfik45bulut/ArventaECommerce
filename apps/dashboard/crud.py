@@ -57,7 +57,6 @@ class CrudConfig:
 class CrudRegistry:
 
     def __init__(self):
-
         self._items: dict[str, CrudConfig] = {}
 
     def register(self, config: CrudConfig):
@@ -65,18 +64,14 @@ class CrudRegistry:
         key = config.name.lower()
 
         if key in self._items:
-            raise ValueError(
-                f'"{config.name}" already registered.'
-            )
+            raise ValueError(f'"{config.name}" already registered.')
 
         self._items[key] = config
 
     def get(self, name: str):
-
         return self._items[name.lower()]
 
     def all(self):
-
         return self._items.values()
 
 
@@ -84,6 +79,14 @@ registry = CrudRegistry()
 
 
 class CrudService:
+
+    @staticmethod
+    def queryset(config: CrudConfig):
+
+        return (
+            config.model.objects.all()
+            .order_by(*config.ordering)
+        )
 
     @staticmethod
     def search(
@@ -103,7 +106,6 @@ class CrudService:
         query = Q()
 
         for field in config.search_fields:
-
             query |= Q(
                 **{
                     f"{field}__icontains": keyword,
@@ -113,36 +115,48 @@ class CrudService:
         return queryset.filter(query)
 
     @staticmethod
-    def queryset(config: CrudConfig):
-
-        return (
-            config.model.objects.all()
-            .order_by(*config.ordering)
-        )
-
-    @staticmethod
     def rows(
         queryset: QuerySet,
         config: CrudConfig,
     ):
 
-        result = []
+        rows = []
 
         for obj in queryset:
 
-            row = []
+            values = []
 
             for column in config.columns:
+                values.append(column.resolve(obj))
 
-                row.append(
-                    column.resolve(obj)
-                )
-
-            result.append(
+            rows.append(
                 {
                     "object": obj,
-                    "values": row,
+                    "values": values,
                 }
             )
 
-        return result
+        return rows
+
+
+def build_context(
+    *,
+    config: CrudConfig,
+    queryset,
+    page_obj=None,
+):
+    """
+    Generic CRUD template context.
+    """
+
+    return {
+        "crud": config,
+        "title": config.title,
+        "columns": config.columns,
+        "rows": CrudService.rows(
+            queryset=queryset,
+            config=config,
+        ),
+        "page_obj": page_obj,
+        "paginate_by": config.paginate_by,
+    }

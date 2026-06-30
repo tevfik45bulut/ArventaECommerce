@@ -1,0 +1,161 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}
+Ürün Sil
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-6">
+
+            <div class="card border-danger shadow-sm">
+
+                <div class="card-header bg-danger text-white">
+
+                    <h5 class="mb-0">
+
+                        Ürün Sil
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <p class="mb-4">
+
+                        Aşağıdaki ürünü silmek istediğinize emin misiniz?
+
+                    </p>
+
+                    <table class="table table-bordered">
+
+                        <tbody>
+
+                            <tr>
+
+                                <th width="180">
+
+                                    ID
+
+                                </th>
+
+                                <td>
+
+                                    {{ object.id }}
+
+                                </td>
+
+                            </tr>
+
+                            <tr>
+
+                                <th>
+
+                                    Ürün
+
+                                </th>
+
+                                <td>
+
+                                    {{ object.name }}
+
+                                </td>
+
+                            </tr>
+
+                            <tr>
+
+                                <th>
+
+                                    SKU
+
+                                </th>
+
+                                <td>
+
+                                    {{ object.sku }}
+
+                                </td>
+
+                            </tr>
+
+                            <tr>
+
+                                <th>
+
+                                    Marka
+
+                                </th>
+
+                                <td>
+
+                                    {{ object.brand }}
+
+                                </td>
+
+                            </tr>
+
+                            <tr>
+
+                                <th>
+
+                                    Kategori
+
+                                </th>
+
+                                <td>
+
+                                    {{ object.category }}
+
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                    <form method="post">
+
+                        {% csrf_token %}
+
+                        <div class="d-flex justify-content-end">
+
+                            <a
+                                href="{% url 'dashboard:products' %}"
+                                class="btn btn-secondary me-2">
+
+                                Vazgeç
+
+                            </a>
+
+                            <button
+                                type="submit"
+                                class="btn btn-danger">
+
+                                <i class="bi bi-trash"></i>
+
+                                Sil
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

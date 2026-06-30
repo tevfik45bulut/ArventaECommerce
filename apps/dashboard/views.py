@@ -1,114 +1,144 @@
-from django.contrib.auth import get_user_model
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Q
+from django.contrib import messages
+from django.urls import reverse_lazy
+from django.views.generic import CreateView
+from django.views.generic import DeleteView
+from django.views.generic import DetailView
 from django.views.generic import ListView
-from django.views.generic import TemplateView
+from django.views.generic import UpdateView
 
-from apps.brands.models import Brand
-from apps.categories.models import Category
-from apps.dashboard.crud import CrudService
-from apps.dashboard.crud import build_context
-from apps.dashboard.crud import registry
 from apps.dashboard.mixins import DashboardAccessMixin
-from apps.dashboard.services import DashboardService
-from apps.orders.models import Order
 from apps.products.models import Product
 
-User = get_user_model()
 
-
-class DashboardView(LoginRequiredMixin, TemplateView):
-    template_name = "dashboard/index.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        context.update(DashboardService.statistics())
-
-        context["product_count"] = Product.objects.count()
-        context["category_count"] = Category.objects.count()
-        context["brand_count"] = Brand.objects.count()
-        context["order_count"] = Order.objects.count()
-        context["user_count"] = User.objects.count()
-
-        context["last_orders"] = (
-            Order.objects.select_related("user")
-            .order_by("-created_at")[:10]
-        )
-
-        return context
-
-
-class GenericDashboardListView(
-    DashboardAccessMixin,
-    ListView,
-):
-    crud_name = None
-
-    template_name = "dashboard/crud/list.html"
-
-    context_object_name = "objects"
-
+class DashboardProductListView(DashboardAccessMixin, ListView):
+    model = Product
+    template_name = "dashboard/products/list.html"
+    context_object_name = "products"
     paginate_by = 20
 
-    config = None
-
-    def dispatch(self, request, *args, **kwargs):
-        DashboardService.register_cruds()
-
-        self.config = registry.get(self.crud_name)
-
-        self.model = self.config.model
-
-        self.paginate_by = self.config.paginate_by
-
-        return super().dispatch(request, *args, **kwargs)
-
     def get_queryset(self):
-        queryset = CrudService.queryset(self.config)
-
-        keyword = self.request.GET.get("q", "").strip()
-
-        queryset = CrudService.search(
-            queryset=queryset,
-            config=self.config,
-            keyword=keyword,
+        queryset = (
+            Product.objects
+            .select_related(
+                "category",
+                "brand",
+            )
+            .order_by("-id")
         )
+
+        q = self.request.GET.get("q")
+
+        if q:
+            queryset = queryset.filter(
+                name__icontains=q,
+            )
 
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        context.update(
-            build_context(
-                config=self.config,
-                queryset=context["object_list"],
-                page_obj=context.get("page_obj"),
-            )
-        )
+        context["title"] = "Ürünler"
 
-        context["search"] = self.request.GET.get("q", "")
+        context["search"] = self.request.GET.get(
+            "q",
+            "",
+        )
 
         return context
 
 
-class DashboardProductListView(GenericDashboardListView):
-    crud_name = "products"
+class DashboardProductDetailView(
+    DashboardAccessMixin,
+    DetailView,
+):
+    model = Product
+    template_name = "dashboard/products/detail.html"
 
-    template_name = "dashboard/products/list.html"
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
 
-    def get_queryset(self):
-        queryset = DashboardService.product_queryset()
+        context["title"] = self.object.name
 
-        keyword = self.request.GET.get("q", "").strip()
+        return context
 
-        if keyword:
-            queryset = queryset.filter(
-                Q(name__icontains=keyword)
-                | Q(sku__icontains=keyword)
-                | Q(category__name__icontains=keyword)
-                | Q(brand__name__icontains=keyword)
-            )
 
-        return queryset
+class DashboardProductCreateView(
+    DashboardAccessMixin,
+    CreateView,
+):
+    model = Product
+
+    fields = "__all__"
+
+    template_name = "dashboard/products/form.html"
+
+    success_url = reverse_lazy(
+        "dashboard:products"
+    )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["title"] = "Yeni Ürün"
+
+        return context
+
+    def form_valid(self, form):
+        messages.success(
+            self.request,
+            "Ürün başarıyla oluşturuldu.",
+        )
+
+        return super().form_valid(form)
+
+
+class DashboardProductUpdateView(
+    DashboardAccessMixin,
+    UpdateView,
+):
+    model = Product
+
+    fields = "__all__"
+
+    template_name = "dashboard/products/form.html"
+
+    success_url = reverse_lazy(
+        "dashboard:products"
+    )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["title"] = "Ürün Düzenle"
+
+        return context
+
+    def form_valid(self, form):
+        messages.success(
+            self.request,
+            "Ürün başarıyla güncellendi.",
+        )
+
+        return super().form_valid(form)
+
+
+class DashboardProductDeleteView(
+    DashboardAccessMixin,
+    DeleteView,
+):
+    model = Product
+
+    template_name = "dashboard/products/delete.html"
+
+    success_url = reverse_lazy(
+        "dashboard:products"
+    )
+
+    def form_valid(self, form):
+        messages.success(
+            self.request,
+            "Ürün başarıyla silindi.",
+        )
+
+        return super().form_valid(form)

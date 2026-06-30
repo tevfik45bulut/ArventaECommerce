@@ -1,101 +1,76 @@
 {% extends "dashboard/base.html" %}
 
+{% block title %}
+Ürünler
+{% endblock %}
+
 {% block content %}
 
-<div class="d-flex justify-content-between mb-4">
+<div class="container-fluid">
 
-<h3>Ürünler</h3>
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-<a href="#" class="btn btn-dark">
+        <div>
+            <h3 class="mb-0">
+                {{ title|default:"Ürünler" }}
+            </h3>
+        </div>
 
-Yeni Ürün
+        <div>
 
-</a>
+            <a href="#"
+               class="btn btn-primary">
+
+                <i class="bi bi-plus-lg"></i>
+
+                Yeni Ürün
+
+            </a>
+
+        </div>
+
+    </div>
+
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            <form method="get"
+                  class="row g-3 mb-4">
+
+                <div class="col-md-5">
+
+                    <input
+                        type="text"
+                        name="q"
+                        class="form-control"
+                        placeholder="Ürün ara..."
+                        value="{{ search }}">
+
+                </div>
+
+                <div class="col-auto">
+
+                    <button
+                        class="btn btn-primary"
+                        type="submit">
+
+                        <i class="bi bi-search"></i>
+
+                        Ara
+
+                    </button>
+
+                </div>
+
+            </form>
+
+            {% include "dashboard/includes/table.html" %}
+
+        </div>
+
+    </div>
 
 </div>
-
-<table class="table table-hover align-middle">
-
-<thead>
-
-<tr>
-
-<th>ID</th>
-
-<th>Ürün</th>
-
-<th>Kategori</th>
-
-<th>Marka</th>
-
-<th>Fiyat</th>
-
-<th>Stok</th>
-
-<th></th>
-
-</tr>
-
-</thead>
-
-<tbody>
-
-{% for product in products %}
-
-<tr>
-
-<td>
-
-{{ product.id }}
-
-</td>
-
-<td>
-
-{{ product.name }}
-
-</td>
-
-<td>
-
-{{ product.category }}
-
-</td>
-
-<td>
-
-{{ product.brand }}
-
-</td>
-
-<td>
-
-{{ product.price }}
-
-</td>
-
-<td>
-
-{{ product.stock }}
-
-</td>
-
-<td>
-
-<a href="#">
-
-Düzenle
-
-</a>
-
-</td>
-
-</tr>
-
-{% endfor %}
-
-</tbody>
-
-</table>
 
 {% endblock %}
