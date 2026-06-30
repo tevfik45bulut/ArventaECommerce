@@ -29,7 +29,7 @@ class Category(BaseModel, SEOModel, SlugModel):
     class Meta:
         ordering = ["sort_order", "name"]
         verbose_name = "Kategori"
-        verbose_name_plural = "Kategoriler"
+        verbose_name_plural = "Kategori"
 
     def __str__(self):
         return self.name

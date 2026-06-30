@@ -21,7 +21,7 @@ class Brand(BaseModel, SEOModel, SlugModel):
     class Meta:
         ordering = ["name"]
         verbose_name = "Marka"
-        verbose_name_plural = "Markalar"
+        verbose_name_plural = "Marka"
 
     def __str__(self):
         return self.name

@@ -8,6 +8,8 @@ urlpatterns = [
     path("", include("apps.pages.urls")),
     path("kategoriler/", include("apps.categories.urls")),
     path("markalar/", include("apps.brands.urls")),
+    path("urunler/", include("apps.products.urls")),
+
 ]
 
 if settings.DEBUG:
