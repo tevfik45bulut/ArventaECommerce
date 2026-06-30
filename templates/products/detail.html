@@ -1,24 +1,69 @@
 {% extends "base.html" %}
 
 {% block title %}{{ object.meta_title|default:object.name }}{% endblock %}
-
 {% block description %}{{ object.meta_description }}{% endblock %}
 
 {% block content %}
 
 <div class="container py-5">
 
-<h1>{{ object.name }}</h1>
+    <div class="row">
 
-<p>{{ object.brand }}</p>
+        <div class="col-lg-6">
 
-<p>{{ object.category }}</p>
+            {% if object.images.first %}
+                <img src="{{ object.images.first.image.url }}" class="img-fluid rounded">
+            {% endif %}
 
-<h3>{{ object.price }} ₺</h3>
+        </div>
 
-<hr>
+        <div class="col-lg-6">
 
-{{ object.description|linebreaks }}
+            <h1>{{ object.name }}</h1>
+
+            <p class="text-muted">
+                {{ object.brand }}
+            </p>
+
+            <h3 class="mb-4">
+                {{ object.price }} ₺
+            </h3>
+
+            <div class="mb-4">
+                {{ object.description|linebreaks }}
+            </div>
+
+        </div>
+
+    </div>
+
+    {% if object.specifications.exists %}
+
+    <hr>
+
+    <h3>Teknik Özellikler</h3>
+
+    <table class="table">
+
+        <tbody>
+
+        {% for item in object.specifications.all %}
+
+            <tr>
+
+                <th>{{ item.title }}</th>
+
+                <td>{{ item.value }}</td>
+
+            </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+    {% endif %}
 
 </div>
 

@@ -9,6 +9,9 @@ from .models import (
     ProductTag,
     ProductVariant,
     ProductVariantValue,
+    ProductDocument,
+    ProductSpecification,
+    RelatedProduct,
 )
 
 class ProductVariantValueInline(admin.TabularInline):
@@ -70,3 +73,6 @@ admin.site.register(ProductAttribute)
 admin.site.register(ProductAttributeValue)
 admin.site.register(ProductReview)
 admin.site.register(ProductVariantValue)
+admin.site.register(ProductSpecification)
+admin.site.register(ProductDocument)
+admin.site.register(RelatedProduct)

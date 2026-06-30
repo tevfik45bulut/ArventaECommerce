@@ -23,3 +23,20 @@ class ProductDetailView(DetailView):
     template_name = "products/detail.html"
     slug_field = "slug"
     slug_url_kwarg = "slug"
+
+    def get_queryset(self):
+        return (
+            Product.objects.filter(is_active=True)
+            .select_related(
+                "brand",
+                "category",
+            )
+            .prefetch_related(
+                "images",
+                "variants",
+                "reviews",
+                "specifications",
+                "documents",
+                "related_products__related_product",
+            )
+        )

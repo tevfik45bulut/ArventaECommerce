@@ -215,7 +215,7 @@ class ProductVariantValue(models.Model):
     class Meta:
         verbose_name = "Ürün Varyant Değeri"
         verbose_name_plural = "Ürün Varyant Değerleri"
-        
+
 
 class ProductReview(BaseModel):
     product = models.ForeignKey(
@@ -234,3 +234,61 @@ class ProductReview(BaseModel):
         ordering = ["-created_at"]
         verbose_name = "Ürün İncelemesi"
         verbose_name_plural = "Ürün İncelemeleri"
+
+
+class ProductSpecification(models.Model):
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="specifications",
+    )
+
+    title = models.CharField(max_length=150)
+
+    value = models.CharField(max_length=255)
+
+    sort_order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["sort_order"]
+
+    def __str__(self):
+        return f"{self.title}: {self.value}"
+
+
+class ProductDocument(models.Model):
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="documents",
+    )
+
+    title = models.CharField(max_length=150)
+
+    file = models.FileField(upload_to="products/documents/")
+
+    def __str__(self):
+        return self.title
+
+
+class RelatedProduct(models.Model):
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="related_products",
+    )
+
+    related_product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="related_to",
+    )
+
+    class Meta:
+        unique_together = (
+            "product",
+            "related_product",
+        )
+
+    def __str__(self):
+        return f"{self.product} -> {self.related_product}"

@@ -53,3 +53,10 @@ class BaseModel(
 ):
     class Meta:
         abstract = True
+
+class OrderedModel(models.Model):
+    sort_order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        abstract = True
+        ordering = ["sort_order"]
