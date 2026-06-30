@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="Review",
+            name="Wishlist",
             fields=[
                 (
                     "id",
@@ -30,32 +30,55 @@ class Migration(migrations.Migration):
                 ("created_at", models.DateTimeField(auto_now_add=True)),
                 ("updated_at", models.DateTimeField(auto_now=True)),
                 ("is_active", models.BooleanField(default=True)),
-                ("rating", models.PositiveSmallIntegerField()),
-                ("title", models.CharField(blank=True, max_length=200)),
-                ("comment", models.TextField()),
-                ("is_approved", models.BooleanField(default=False)),
-                (
-                    "product",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        related_name="customer_reviews",
-                        to="products.product",
-                    ),
-                ),
                 (
                     "user",
-                    models.ForeignKey(
+                    models.OneToOneField(
                         on_delete=django.db.models.deletion.CASCADE,
-                        related_name="reviews",
+                        related_name="wishlist",
                         to=settings.AUTH_USER_MODEL,
                     ),
                 ),
             ],
             options={
-                "verbose_name": "Ürün Yorumu",
-                "verbose_name_plural": "Ürün Yorumları",
-                "ordering": ["-created_at"],
-                "unique_together": {("product", "user")},
+                "verbose_name": "İstek Listesi",
+                "verbose_name_plural": "İstek Listesi",
+            },
+        ),
+        migrations.CreateModel(
+            name="WishlistItem",
+            fields=[
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("is_active", models.BooleanField(default=True)),
+                (
+                    "product",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="products.product",
+                    ),
+                ),
+                (
+                    "wishlist",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="items",
+                        to="wishlist.wishlist",
+                    ),
+                ),
+            ],
+            options={
+                "verbose_name": "İstek Listesi Ürünü",
+                "verbose_name_plural": "İstek Listesi Ürünleri",
+                "unique_together": {("wishlist", "product")},
             },
         ),
     ]
