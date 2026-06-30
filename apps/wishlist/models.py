@@ -12,6 +12,10 @@ class Wishlist(BaseModel):
         related_name="wishlist",
     )
 
+    class Meta:
+        verbose_name = "İstek Listesi"
+        verbose_name_plural = "İstek Listesi"
+
     def __str__(self):
         return self.user.email
 
@@ -33,6 +37,8 @@ class WishlistItem(BaseModel):
             "wishlist",
             "product",
         )
+        verbose_name = "İstek Listesi Ürünü"
+        verbose_name_plural = "İstek Listesi Ürünleri"
 
     def __str__(self):
         return self.product.name
