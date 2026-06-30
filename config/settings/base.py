@@ -24,6 +24,7 @@ INSTALLED_APPS = [
 
     "apps.common",
     "apps.pages",
+    "apps.categories",
 ]
 
 MIDDLEWARE = [

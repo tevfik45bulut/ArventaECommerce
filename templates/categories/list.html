@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Kategoriler{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <h1 class="mb-4">Kategoriler</h1>
+
+    <div class="row">
+
+        {% for category in categories %}
+
+        <div class="col-md-3 mb-4">
+
+            <div class="card">
+
+                {% if category.image %}
+                    <img src="{{ category.image.url }}" class="card-img-top">
+                {% endif %}
+
+                <div class="card-body">
+
+                    <h5>{{ category.name }}</h5>
+
+                    <a href="{{ category.get_absolute_url }}" class="btn btn-dark">
+
+                        Görüntüle
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% empty %}
+
+        <p>Kategori bulunamadı.</p>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}
