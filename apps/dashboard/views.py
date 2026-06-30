@@ -43,10 +43,6 @@ class GenericDashboardListView(
     DashboardAccessMixin,
     ListView,
 ):
-    """
-    Generic CRUD ListView
-    """
-
     crud_name = None
 
     template_name = "dashboard/crud/list.html"
@@ -58,7 +54,7 @@ class GenericDashboardListView(
     config = None
 
     def dispatch(self, request, *args, **kwargs):
-        DashboardService.register_crud()
+        DashboardService.register_cruds()
 
         self.config = registry.get(self.crud_name)
 
@@ -66,33 +62,22 @@ class GenericDashboardListView(
 
         self.paginate_by = self.config.paginate_by
 
-        return super().dispatch(
-            request,
-            *args,
-            **kwargs,
-        )
+        return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
+        queryset = CrudService.queryset(self.config)
 
-        queryset = CrudService.queryset(
-            self.config
-        )
-
-        keyword = (
-            self.request.GET.get("q", "")
-            .strip()
-        )
+        keyword = self.request.GET.get("q", "").strip()
 
         queryset = CrudService.search(
-            queryset,
-            self.config,
-            keyword,
+            queryset=queryset,
+            config=self.config,
+            keyword=keyword,
         )
 
         return queryset
 
     def get_context_data(self, **kwargs):
-
         context = super().get_context_data(**kwargs)
 
         context.update(
@@ -103,46 +88,22 @@ class GenericDashboardListView(
             )
         )
 
-        context["search"] = (
-            self.request.GET.get("q", "")
-        )
+        context["search"] = self.request.GET.get("q", "")
 
         return context
 
 
-class DashboardProductListView(
-    GenericDashboardListView,
-):
-    """
-    Product List
-    """
-
+class DashboardProductListView(GenericDashboardListView):
     crud_name = "products"
 
     template_name = "dashboard/products/list.html"
 
     def get_queryset(self):
-        """
-        İlk fazda mevcut davranışı koruyoruz.
-        Sonraki fazda select_related bilgisi
-        CrudConfig içine taşınacak.
-        """
+        queryset = DashboardService.product_queryset()
 
-        queryset = (
-            Product.objects.select_related(
-                "category",
-                "brand",
-            )
-            .order_by("-id")
-        )
-
-        keyword = (
-            self.request.GET.get("q", "")
-            .strip()
-        )
+        keyword = self.request.GET.get("q", "").strip()
 
         if keyword:
-
             queryset = queryset.filter(
                 Q(name__icontains=keyword)
                 | Q(sku__icontains=keyword)
