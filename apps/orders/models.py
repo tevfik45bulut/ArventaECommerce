@@ -57,6 +57,10 @@ class Order(BaseModel):
 
     def __str__(self):
         return self.order_number
+    
+    class Meta:
+        verbose_name = "Sipariş"
+        verbose_name_plural = "Sipariş"  
 
 
 class OrderItem(models.Model):
@@ -97,6 +101,10 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return self.product_name
+    
+    class Meta:
+        verbose_name = "Sipariş Ürünü"
+        verbose_name_plural = "Sipariş Ürünleri"   
 
 
 class OrderAddress(models.Model):
@@ -124,6 +132,10 @@ class OrderAddress(models.Model):
 
     def __str__(self):
         return self.full_name
+    
+    class Meta:
+        verbose_name = "Sipariş Adresi"
+        verbose_name_plural = "Sipariş Adresi"
 
 
 class OrderStatusHistory(models.Model):
@@ -138,6 +150,11 @@ class OrderStatusHistory(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "Sipariş Durum Geçmişi"
+        verbose_name_plural = "Sipariş Durum Geçmişi"
+
 
 class OrderNote(models.Model):
 
@@ -150,3 +167,8 @@ class OrderNote(models.Model):
     note = models.TextField()
 
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "Sipariş Notu"
+        verbose_name_plural = "Sipariş Notları"
