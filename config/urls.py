@@ -11,6 +11,7 @@ urlpatterns = [
     path("urunler/", include("apps.products.urls")),
     path("", include("apps.cart.urls")),
     path("", include("apps.wishlist.urls")),
+    path("dashboard/", include("apps.dashboard.urls")),
 ]
 
 if settings.DEBUG:

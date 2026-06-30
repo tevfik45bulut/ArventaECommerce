@@ -31,6 +31,10 @@ INSTALLED_APPS = [
     "apps.wishlist",
     "apps.orders",
     "apps.payments",
+    "apps.dashboard",
+    "apps.accounts",
+    "apps.shipping",
+    "apps.discounts",
 ]
 
 MIDDLEWARE = [
@@ -117,3 +121,5 @@ LOGIN_URL = "/admin/login/"
 LOGIN_REDIRECT_URL = "/"
 
 LOGOUT_REDIRECT_URL = "/"
+
+AUTH_USER_MODEL = "accounts.User"

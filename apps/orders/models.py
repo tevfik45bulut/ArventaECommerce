@@ -3,7 +3,7 @@ from django.db import models
 
 from apps.common.models import BaseModel
 from apps.products.models import Product, ProductVariant
-
+from apps.shipping.models import ShippingMethod
 
 class Order(BaseModel):
 
@@ -29,6 +29,13 @@ class Order(BaseModel):
         max_length=20,
         choices=Status.choices,
         default=Status.PENDING,
+    )
+
+    shipping_method = models.ForeignKey(
+        ShippingMethod,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
     )
 
     subtotal = models.DecimalField(

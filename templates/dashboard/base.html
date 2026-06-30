@@ -1,0 +1,89 @@
+{% load static %}
+<!doctype html>
+<html lang="tr">
+
+<head>
+
+<meta charset="utf-8">
+
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>{% block title %}Dashboard{% endblock %}</title>
+
+<link rel="stylesheet" href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}">
+
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+
+</head>
+
+<body>
+
+<div class="container-fluid">
+
+<div class="row">
+
+<div class="col-lg-2 bg-dark text-white min-vh-100">
+
+<h3 class="py-4">
+
+Arventa
+
+</h3>
+
+<div class="list-group">
+
+<a class="list-group-item" href="/dashboard/">
+
+Dashboard
+
+</a>
+
+<a class="list-group-item" href="/admin/">
+
+Django Admin
+
+</a>
+
+<a class="list-group-item" href="/urunler/">
+
+Ürünler
+
+</a>
+
+<a class="list-group-item" href="/kategoriler/">
+
+Kategoriler
+
+</a>
+
+<a class="list-group-item" href="/markalar/">
+
+Markalar
+
+</a>
+
+</div>
+
+</div>
+
+<div class="col-lg-10">
+
+<div class="p-4">
+
+{% block content %}
+
+{% endblock %}
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,121 @@
+{% extends "dashboard/base.html" %}
+
+{% block content %}
+
+<div class="row g-4">
+
+<div class="col-lg-3">
+
+<div class="card">
+
+<div class="card-body">
+
+<h6>Ürün</h6>
+
+<h2>{{ product_count }}</h2>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-lg-3">
+
+<div class="card">
+
+<div class="card-body">
+
+<h6>Kategori</h6>
+
+<h2>{{ category_count }}</h2>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-lg-3">
+
+<div class="card">
+
+<div class="card-body">
+
+<h6>Marka</h6>
+
+<h2>{{ brand_count }}</h2>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-lg-3">
+
+<div class="card">
+
+<div class="card-body">
+
+<h6>Sipariş</h6>
+
+<h2>{{ order_count }}</h2>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<hr>
+
+<h4>
+
+Son Siparişler
+
+</h4>
+
+<table class="table">
+
+<thead>
+
+<tr>
+
+<th>No</th>
+
+<th>Kullanıcı</th>
+
+<th>Tutar</th>
+
+<th>Durum</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for order in last_orders %}
+
+<tr>
+
+<td>{{ order.order_number }}</td>
+
+<td>{{ order.user }}</td>
+
+<td>{{ order.total }}</td>
+
+<td>{{ order.get_status_display }}</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+{% endblock %}
