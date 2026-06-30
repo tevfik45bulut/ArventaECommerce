@@ -37,25 +37,25 @@
 
     </div>
 
-    {% if object.specifications.exists %}
+    {% for group in object.specification_groups.all %}
 
     <hr>
 
-    <h3>Teknik Özellikler</h3>
+    <h3>{{ group.name }}</h3>
 
-    <table class="table">
+    <table class="table table-bordered">
 
         <tbody>
 
-        {% for item in object.specifications.all %}
+        {% for item in group.specifications.all %}
 
-            <tr>
+        <tr>
 
-                <th>{{ item.title }}</th>
+            <th width="35%">{{ item.title }}</th>
 
-                <td>{{ item.value }}</td>
+            <td>{{ item.value }}</td>
 
-            </tr>
+        </tr>
 
         {% endfor %}
 
@@ -63,7 +63,7 @@
 
     </table>
 
-    {% endif %}
+    {% endfor %}
 
 </div>
 

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Sepet{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+<h2>Sepetim</h2>
+
+<table class="table">
+
+<thead>
+
+<tr>
+
+<th>Ürün</th>
+
+<th>Adet</th>
+
+<th>Fiyat</th>
+
+<th>Toplam</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for item in cart.items.all %}
+
+<tr>
+
+<td>{{ item.product.name }}</td>
+
+<td>{{ item.quantity }}</td>
+
+<td>{{ item.unit_price }} ₺</td>
+
+<td>{{ item.total_price }} ₺</td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+
+<td colspan="4">
+
+Sepetiniz boş.
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% endblock %}

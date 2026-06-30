@@ -12,7 +12,26 @@ from .models import (
     ProductDocument,
     ProductSpecification,
     RelatedProduct,
+    ProductSpecificationGroup,
 )
+
+class ProductSpecificationInline(admin.TabularInline):
+    model = ProductSpecification
+    extra = 0
+
+
+@admin.register(ProductSpecificationGroup)
+class ProductSpecificationGroupAdmin(admin.ModelAdmin):
+
+    list_display = (
+        "product",
+        "name",
+        "sort_order",
+    )
+
+    inlines = [
+        ProductSpecificationInline,
+    ]
 
 class ProductVariantValueInline(admin.TabularInline):
     model = ProductVariantValue
@@ -73,6 +92,5 @@ admin.site.register(ProductAttribute)
 admin.site.register(ProductAttributeValue)
 admin.site.register(ProductReview)
 admin.site.register(ProductVariantValue)
-admin.site.register(ProductSpecification)
 admin.site.register(ProductDocument)
 admin.site.register(RelatedProduct)

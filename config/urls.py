@@ -9,7 +9,7 @@ urlpatterns = [
     path("kategoriler/", include("apps.categories.urls")),
     path("markalar/", include("apps.brands.urls")),
     path("urunler/", include("apps.products.urls")),
-
+    path("", include("apps.cart.urls")),
 ]
 
 if settings.DEBUG:

@@ -35,8 +35,8 @@ class ProductDetailView(DetailView):
                 "images",
                 "variants",
                 "reviews",
-                "specifications",
                 "documents",
                 "related_products__related_product",
+                "specification_groups__specifications",
             )
         )

@@ -120,8 +120,8 @@ class ProductAttribute(models.Model):
         return self.name
     
     class Meta:
-        verbose_name = "Ürün Özelliği"
-        verbose_name_plural = "Ürün Özellikleri"
+        verbose_name = "Ürün Niteliği"
+        verbose_name_plural = "Ürün Nitelikleri"
 
 
 class ProductAttributeValue(models.Model):
@@ -137,8 +137,8 @@ class ProductAttributeValue(models.Model):
         return f"{self.attribute.name}: {self.value}"
 
     class Meta:
-        verbose_name = "Ürün Özellik Değeri"
-        verbose_name_plural = "Ürün Özellik Değerleri"
+        verbose_name = "Ürün Nitelik Değeri"
+        verbose_name_plural = "Ürün Nitelik Değerleri"
 
 
 class ProductVariant(BaseModel):
@@ -236,9 +236,29 @@ class ProductReview(BaseModel):
         verbose_name_plural = "Ürün İncelemeleri"
 
 
-class ProductSpecification(models.Model):
+class ProductSpecificationGroup(models.Model):
     product = models.ForeignKey(
         Product,
+        on_delete=models.CASCADE,
+        related_name="specification_groups",
+    )
+
+    name = models.CharField(max_length=150)
+
+    sort_order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["sort_order"]
+        verbose_name = "Ürün Özellik Grubu"
+        verbose_name_plural = "Ürün Özellik Grupları"
+
+    def __str__(self):
+        return self.name
+
+
+class ProductSpecification(models.Model):
+    group = models.ForeignKey(
+        ProductSpecificationGroup,
         on_delete=models.CASCADE,
         related_name="specifications",
     )
@@ -251,7 +271,7 @@ class ProductSpecification(models.Model):
 
     class Meta:
         ordering = ["sort_order"]
-
+        verbose_name = "Ürün Nitelik Değeri"
     def __str__(self):
         return f"{self.title}: {self.value}"
 
@@ -269,6 +289,10 @@ class ProductDocument(models.Model):
 
     def __str__(self):
         return self.title
+    
+    class Meta:
+        verbose_name = "Ürün Belgesi"
+        verbose_name_plural = "Ürün Belgeleri"
 
 
 class RelatedProduct(models.Model):
@@ -289,6 +313,8 @@ class RelatedProduct(models.Model):
             "product",
             "related_product",
         )
+        verbose_name = "İlgili Ürün"
+        verbose_name_plural = "İlgili Ürünler"
 
     def __str__(self):
         return f"{self.product} -> {self.related_product}"
