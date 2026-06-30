@@ -35,19 +35,13 @@ class Product(BaseModel, SEOModel, SlugModel):
 
     sku = models.CharField(max_length=100, unique=True)
 
-    barcode = models.CharField(
-        max_length=100,
-        blank=True,
-    )
+    barcode = models.CharField(max_length=100, blank=True)
 
     short_description = models.TextField(blank=True)
 
     description = models.TextField(blank=True)
 
-    price = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-    )
+    price = models.DecimalField(max_digits=10, decimal_places=2)
 
     compare_price = models.DecimalField(
         max_digits=10,
@@ -56,6 +50,12 @@ class Product(BaseModel, SEOModel, SlugModel):
     )
 
     stock = models.PositiveIntegerField(default=0)
+
+    tags = models.ManyToManyField(
+        "ProductTag",
+        blank=True,
+        related_name="products",
+    )
 
     class Meta:
         ordering = ["name"]
@@ -71,5 +71,119 @@ class Product(BaseModel, SEOModel, SlugModel):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = unique_slug(self, self.name)
-
         super().save(*args, **kwargs)
+
+
+class ProductImage(BaseModel):
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="images",
+    )
+
+    image = models.ImageField(upload_to="products/")
+
+    alt = models.CharField(max_length=255, blank=True)
+
+    is_cover = models.BooleanField(default=False)
+
+    sort_order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["sort_order"]
+        verbose_name = "Ürün Görseli"
+        verbose_name_plural = "Ürün Görselleri"
+
+
+class ProductTag(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    slug = models.SlugField(unique=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = unique_slug(self, self.name)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name = "Ürün Etiketi"
+        verbose_name_plural = "Ürün Etiketleri"
+
+
+class ProductAttribute(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name = "Ürün Özelliği"
+        verbose_name_plural = "Ürün Özellikleri"
+
+
+class ProductAttributeValue(models.Model):
+    attribute = models.ForeignKey(
+        ProductAttribute,
+        on_delete=models.CASCADE,
+        related_name="values",
+    )
+
+    value = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f"{self.attribute.name}: {self.value}"
+
+    class Meta:
+        verbose_name = "Ürün Özellik Değeri"
+        verbose_name_plural = "Ürün Özellik Değerleri"
+
+
+class ProductVariant(BaseModel):
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="variants",
+    )
+
+    sku = models.CharField(max_length=100, unique=True)
+
+    price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+    )
+
+    stock = models.PositiveIntegerField(default=0)
+
+    values = models.ManyToManyField(
+        ProductAttributeValue,
+        blank=True,
+    )
+
+    def __str__(self):
+        return self.sku
+    
+    class Meta:
+        verbose_name = "Ürün Varyantı"
+        verbose_name_plural = "Ürün Varyantları"
+
+
+class ProductReview(BaseModel):
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="reviews",
+    )
+
+    name = models.CharField(max_length=100)
+
+    rating = models.PositiveSmallIntegerField()
+
+    comment = models.TextField()
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "Ürün İncelemesi"
+        verbose_name_plural = "Ürün İncelemeleri"
