@@ -1,9 +1,16 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
+from django.views.generic import ListView
 from django.views.generic import TemplateView
 
 from apps.brands.models import Brand
 from apps.categories.models import Category
+from apps.dashboard.crud import CrudService
+from apps.dashboard.crud import build_context
+from apps.dashboard.crud import registry
+from apps.dashboard.mixins import DashboardAccessMixin
+from apps.dashboard.services import DashboardService
 from apps.orders.models import Order
 from apps.products.models import Product
 
@@ -15,6 +22,8 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        context.update(DashboardService.statistics())
 
         context["product_count"] = Product.objects.count()
         context["category_count"] = Category.objects.count()
@@ -29,31 +38,116 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 
         return context
 
-    
-from django.views.generic import ListView
 
-from apps.dashboard.mixins import DashboardAccessMixin
-from apps.products.models import Product
-
-
-class DashboardProductListView(
+class GenericDashboardListView(
     DashboardAccessMixin,
     ListView,
 ):
+    """
+    Generic CRUD ListView
+    """
 
-    model = Product
+    crud_name = None
 
-    template_name = "dashboard/products/list.html"
+    template_name = "dashboard/crud/list.html"
 
-    context_object_name = "products"
+    context_object_name = "objects"
 
     paginate_by = 20
 
-    queryset = (
-        Product.objects
-        .select_related(
-            "category",
-            "brand",
+    config = None
+
+    def dispatch(self, request, *args, **kwargs):
+        DashboardService.register_crud()
+
+        self.config = registry.get(self.crud_name)
+
+        self.model = self.config.model
+
+        self.paginate_by = self.config.paginate_by
+
+        return super().dispatch(
+            request,
+            *args,
+            **kwargs,
         )
-        .order_by("-id")
-    )
+
+    def get_queryset(self):
+
+        queryset = CrudService.queryset(
+            self.config
+        )
+
+        keyword = (
+            self.request.GET.get("q", "")
+            .strip()
+        )
+
+        queryset = CrudService.search(
+            queryset,
+            self.config,
+            keyword,
+        )
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+
+        context.update(
+            build_context(
+                config=self.config,
+                queryset=context["object_list"],
+                page_obj=context.get("page_obj"),
+            )
+        )
+
+        context["search"] = (
+            self.request.GET.get("q", "")
+        )
+
+        return context
+
+
+class DashboardProductListView(
+    GenericDashboardListView,
+):
+    """
+    Product List
+    """
+
+    crud_name = "products"
+
+    template_name = "dashboard/products/list.html"
+
+    def get_queryset(self):
+        """
+        İlk fazda mevcut davranışı koruyoruz.
+        Sonraki fazda select_related bilgisi
+        CrudConfig içine taşınacak.
+        """
+
+        queryset = (
+            Product.objects.select_related(
+                "category",
+                "brand",
+            )
+            .order_by("-id")
+        )
+
+        keyword = (
+            self.request.GET.get("q", "")
+            .strip()
+        )
+
+        if keyword:
+
+            queryset = queryset.filter(
+                Q(name__icontains=keyword)
+                | Q(sku__icontains=keyword)
+                | Q(category__name__icontains=keyword)
+                | Q(brand__name__icontains=keyword)
+            )
+
+        return queryset
