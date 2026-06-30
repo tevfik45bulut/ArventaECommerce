@@ -4,7 +4,7 @@ from django.forms import ModelForm
 
 class SearchForm(forms.Form):
     """
-    Dashboard liste ekranlarında ortak arama formu.
+    Dashboard ortak arama formu.
     """
 
     q = forms.CharField(
@@ -14,6 +14,7 @@ class SearchForm(forms.Form):
             attrs={
                 "class": "form-control",
                 "placeholder": "Ara...",
+                "autocomplete": "off",
             }
         ),
     )
@@ -21,9 +22,9 @@ class SearchForm(forms.Form):
 
 class DashboardModelForm(ModelForm):
     """
-    Generic Dashboard ModelForm.
+    Dashboard için ortak ModelForm.
 
-    Bootstrap sınıflarını otomatik uygular.
+    Bootstrap 5 sınıflarını otomatik uygular.
     """
 
     def __init__(self, *args, **kwargs):
@@ -33,40 +34,61 @@ class DashboardModelForm(ModelForm):
 
             widget = field.widget
 
-            if isinstance(
-                widget,
-                (
-                    forms.CheckboxInput,
-                    forms.CheckboxSelectMultiple,
-                ),
-            ):
-                css = widget.attrs.get("class", "")
+            if isinstance(widget, forms.CheckboxInput):
+
                 widget.attrs["class"] = (
-                    f"{css} form-check-input"
+                    widget.attrs.get("class", "")
+                    + " form-check-input"
                 ).strip()
 
-            elif isinstance(
-                widget,
-                (
-                    forms.Select,
-                    forms.SelectMultiple,
-                ),
-            ):
-                css = widget.attrs.get("class", "")
+            elif isinstance(widget, forms.Select):
+
                 widget.attrs["class"] = (
-                    f"{css} form-select"
+                    widget.attrs.get("class", "")
+                    + " form-select"
                 ).strip()
+
+            elif isinstance(widget, forms.SelectMultiple):
+
+                widget.attrs["class"] = (
+                    widget.attrs.get("class", "")
+                    + " form-select"
+                ).strip()
+
+            elif isinstance(widget, forms.ClearableFileInput):
+
+                widget.attrs["class"] = (
+                    widget.attrs.get("class", "")
+                    + " form-control"
+                ).strip()
+
+            elif isinstance(widget, forms.FileInput):
+
+                widget.attrs["class"] = (
+                    widget.attrs.get("class", "")
+                    + " form-control"
+                ).strip()
+
+            elif isinstance(widget, forms.Textarea):
+
+                widget.attrs["class"] = (
+                    widget.attrs.get("class", "")
+                    + " form-control"
+                ).strip()
+
+                widget.attrs.setdefault("rows", 4)
 
             else:
-                css = widget.attrs.get("class", "")
+
                 widget.attrs["class"] = (
-                    f"{css} form-control"
+                    widget.attrs.get("class", "")
+                    + " form-control"
                 ).strip()
 
 
 class DashboardFormFactory:
     """
-    Model bazlı ModelForm üreticisi.
+    Generic Dashboard Form Factory
 
     Örnek:
 
@@ -79,33 +101,36 @@ class DashboardFormFactory:
     @staticmethod
     def create(
         model,
+        *,
         fields="__all__",
         exclude=None,
         widgets=None,
         labels=None,
         help_texts=None,
     ):
+
         widgets = widgets or {}
         labels = labels or {}
         help_texts = help_texts or {}
 
-        meta = type(
-            "Meta",
-            (),
-            {
-                "model": model,
-                "fields": fields,
-                "exclude": exclude,
-                "widgets": widgets,
-                "labels": labels,
-                "help_texts": help_texts,
-            },
-        )
+        class Meta:
+
+            model = model
+
+            fields = fields
+
+            exclude = exclude
+
+            widgets = widgets
+
+            labels = labels
+
+            help_texts = help_texts
 
         return type(
-            f"{model.__name__}DashboardForm",
+            f"{model.__name__}Form",
             (DashboardModelForm,),
             {
-                "Meta": meta,
+                "Meta": Meta,
             },
         )

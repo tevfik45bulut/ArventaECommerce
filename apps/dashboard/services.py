@@ -1,22 +1,17 @@
-from apps.brands.models import Brand
-from apps.categories.models import Category
-from apps.orders.models import Order
-from apps.products.models import Product
-
-from .crud import CrudColumn
-from .crud import CrudConfig
-from .crud import registry
+from django.apps import apps
 
 
 class DashboardService:
-
-    _crud_registered = False
+    """
+    Dashboard ortak servisleri.
+    """
 
     @staticmethod
     def statistics():
-        """
-        Dashboard ana sayfa istatistikleri.
-        """
+        Product = apps.get_model("products", "Product")
+        Category = apps.get_model("categories", "Category")
+        Brand = apps.get_model("brands", "Brand")
+        Order = apps.get_model("orders", "Order")
 
         return {
             "products": Product.objects.count(),
@@ -25,52 +20,9 @@ class DashboardService:
             "orders": Order.objects.count(),
         }
 
-    @classmethod
-    def register_cruds(cls):
-        """
-        Generic CRUD tanımlarını sisteme yükler.
-
-        Birden fazla kez çağrılsa bile tekrar kayıt oluşturmaz.
-        """
-
-        if cls._crud_registered:
-            return
-
-        registry.register(
-            CrudConfig(
-                name="products",
-                model=Product,
-                title="Ürünler",
-                columns=[
-                    CrudColumn("id", "ID"),
-                    CrudColumn("name", "Ürün", searchable=True),
-                    CrudColumn("sku", "SKU", searchable=True),
-                    CrudColumn("category__name", "Kategori"),
-                    CrudColumn("brand__name", "Marka"),
-                    CrudColumn("price", "Fiyat"),
-                    CrudColumn("stock", "Stok"),
-                    CrudColumn("is_active", "Aktif"),
-                ],
-                search_fields=[
-                    "name",
-                    "sku",
-                    "category__name",
-                    "brand__name",
-                ],
-                ordering=("-id",),
-                paginate_by=20,
-            )
-        )
-
-        cls._crud_registered = True
-
     @staticmethod
-    def product_queryset():
-        """
-        Products için ortak queryset.
-
-        İleride CrudConfig içerisine taşınacaktır.
-        """
+    def latest_products(limit=10):
+        Product = apps.get_model("products", "Product")
 
         return (
             Product.objects
@@ -78,5 +30,32 @@ class DashboardService:
                 "category",
                 "brand",
             )
-            .order_by("-id")
+            .order_by("-id")[:limit]
         )
+
+    @staticmethod
+    def latest_orders(limit=10):
+        Order = apps.get_model("orders", "Order")
+
+        return (
+            Order.objects
+            .select_related(
+                "user",
+            )
+            .order_by("-id")[:limit]
+        )
+
+    @staticmethod
+    def dashboard_context():
+
+        stats = DashboardService.statistics()
+
+        stats["latest_products"] = (
+            DashboardService.latest_products()
+        )
+
+        stats["latest_orders"] = (
+            DashboardService.latest_orders()
+        )
+
+        return stats

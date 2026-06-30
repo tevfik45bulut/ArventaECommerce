@@ -18,6 +18,8 @@ urlpatterns = [
         name="index",
     ),
 
+    # Product CRUD
+
     path(
         "products/",
         DashboardProductListView.as_view(),

@@ -21,6 +21,12 @@ from apps.brands.models import Brand
 from apps.categories.models import Category
 from apps.orders.models import Order
 
+from apps.brands.models import Brand
+from apps.categories.models import Category
+from apps.dashboard.filters import ProductFilter
+
+from django.db.models import Q
+
 
 class DashboardView(DashboardAccessMixin, TemplateView):
     template_name = "dashboard/index.html"
@@ -47,13 +53,22 @@ class DashboardView(DashboardAccessMixin, TemplateView):
         return context
 
 
-class DashboardProductListView(DashboardAccessMixin, ListView):
+class DashboardProductListView(
+    DashboardAccessMixin,
+    ListView,
+):
     model = Product
+
     template_name = "dashboard/products/list.html"
+
     context_object_name = "products"
+
     paginate_by = 20
 
+    filterset_class = ProductFilter
+
     def get_queryset(self):
+
         queryset = (
             Product.objects
             .select_related(
@@ -63,22 +78,40 @@ class DashboardProductListView(DashboardAccessMixin, ListView):
             .order_by("-id")
         )
 
-        q = self.request.GET.get("q")
-
-        if q:
-            queryset = queryset.filter(
-                name__icontains=q,
-            )
+        queryset = self.filterset_class(
+            self.request,
+            queryset,
+        ).filter_queryset()
 
         return queryset
 
     def get_context_data(self, **kwargs):
+
         context = super().get_context_data(**kwargs)
 
         context["title"] = "Ürünler"
 
         context["search"] = self.request.GET.get(
             "q",
+            "",
+        )
+
+        context["categories"] = Category.objects.all()
+
+        context["brands"] = Brand.objects.all()
+
+        context["selected_category"] = self.request.GET.get(
+            "category",
+            "",
+        )
+
+        context["selected_brand"] = self.request.GET.get(
+            "brand",
+            "",
+        )
+
+        context["selected_status"] = self.request.GET.get(
+            "is_active",
             "",
         )
 
@@ -171,6 +204,101 @@ class DashboardProductDeleteView(
     success_url = reverse_lazy(
         "dashboard:products"
     )
+
+    def form_valid(self, form):
+        messages.success(
+            self.request,
+            "Ürün başarıyla silindi.",
+        )
+
+        return super().form_valid(form)
+    
+
+class DashboardProductDetailView(
+    DashboardAccessMixin,
+    DetailView,
+):
+    model = Product
+
+    template_name = "dashboard/products/detail.html"
+
+    context_object_name = "product"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["title"] = self.object.name
+
+        return context
+
+
+class DashboardProductCreateView(
+    DashboardAccessMixin,
+    CreateView,
+):
+    model = Product
+
+    fields = "__all__"
+
+    template_name = "dashboard/products/form.html"
+
+    success_url = reverse_lazy("dashboard:products")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["title"] = "Yeni Ürün"
+
+        return context
+
+    def form_valid(self, form):
+        messages.success(
+            self.request,
+            "Ürün başarıyla oluşturuldu.",
+        )
+
+        return super().form_valid(form)
+
+
+class DashboardProductUpdateView(
+    DashboardAccessMixin,
+    UpdateView,
+):
+    model = Product
+
+    fields = "__all__"
+
+    template_name = "dashboard/products/form.html"
+
+    success_url = reverse_lazy("dashboard:products")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["title"] = "Ürün Güncelle"
+
+        return context
+
+    def form_valid(self, form):
+        messages.success(
+            self.request,
+            "Ürün başarıyla güncellendi.",
+        )
+
+        return super().form_valid(form)
+
+
+class DashboardProductDeleteView(
+    DashboardAccessMixin,
+    DeleteView,
+):
+    model = Product
+
+    template_name = "dashboard/products/delete.html"
+
+    success_url = reverse_lazy("dashboard:products")
+
+    context_object_name = "product"
 
     def form_valid(self, form):
         messages.success(

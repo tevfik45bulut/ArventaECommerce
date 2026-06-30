@@ -3,8 +3,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from django.db.models import Model
-
 
 @dataclass(slots=True)
 class TableColumn:
@@ -14,25 +12,24 @@ class TableColumn:
 
     field: str
     title: str
-    searchable: bool = False
+
     sortable: bool = True
+
+    searchable: bool = False
+
+    css_class: str = ""
+
     default: Any = "-"
 
-    def get_value(self, obj: Model) -> Any:
-        """
-        Objeden alan değerini güvenli şekilde döndürür.
+    formatter: callable | None = None
 
-        field örnekleri:
-
-            name
-            category__name
-            brand__name
-        """
+    def value(self, obj):
 
         value = obj
 
-        for attr in self.field.split("__"):
-            value = getattr(value, attr, None)
+        for part in self.field.split("__"):
+
+            value = getattr(value, part, None)
 
             if value is None:
                 return self.default
@@ -41,41 +38,102 @@ class TableColumn:
             value = value()
 
         if value in ("", None):
-            return self.default
+            value = self.default
+
+        if self.formatter:
+            return self.formatter(value)
 
         return value
 
 
 class DashboardTable:
     """
-    Generic Dashboard tablo sınıfı.
+    Generic Dashboard Table
     """
 
-    columns: list[TableColumn] = []
+    columns = []
 
     def __init__(self, queryset):
+
         self.queryset = queryset
 
     @property
     def headers(self):
+
         return self.columns
 
     @property
     def rows(self):
-        data = []
+
+        rows = []
 
         for obj in self.queryset:
 
-            values = []
+            row = {
+                "object": obj,
+                "columns": [],
+            }
 
             for column in self.columns:
-                values.append(column.get_value(obj))
 
-            data.append(
-                {
-                    "object": obj,
-                    "values": values,
-                }
-            )
+                row["columns"].append(
+                    column.value(obj)
+                )
 
-        return data
+            rows.append(row)
+
+        return rows
+
+
+class ProductTable(DashboardTable):
+
+    columns = [
+
+        TableColumn(
+            "id",
+            "ID",
+        ),
+
+        TableColumn(
+            "name",
+            "Ürün",
+            searchable=True,
+        ),
+
+        TableColumn(
+            "sku",
+            "SKU",
+            searchable=True,
+        ),
+
+        TableColumn(
+            "category__name",
+            "Kategori",
+        ),
+
+        TableColumn(
+            "brand__name",
+            "Marka",
+        ),
+
+        TableColumn(
+            "price",
+            "Fiyat",
+        ),
+
+        TableColumn(
+            "stock",
+            "Stok",
+        ),
+
+        TableColumn(
+            "is_active",
+            "Durum",
+            formatter=lambda value: (
+                "Aktif"
+                if value
+                else "Pasif"
+            ),
+        ),
+
+    ]
