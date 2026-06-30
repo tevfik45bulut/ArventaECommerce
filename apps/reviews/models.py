@@ -35,6 +35,8 @@ class Review(BaseModel):
             "product",
             "user",
         )
+        verbose_name = "Ürün Yorumu"
+        verbose_name_plural = "Ürün Yorumları"
 
     def __str__(self):
         return f"{self.product} ({self.rating})"
